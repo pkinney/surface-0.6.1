@@ -80,29 +80,30 @@ defmodule Surface.TypeHandler do
     quote do
       @behaviour unquote(__MODULE__)
       @default_handler unquote(__MODULE__).Default
+      if __MODULE__ != @default_handler do
+        @impl true
+        defdelegate literal_to_ast_node(type, name, value, meta), to: @default_handler
 
-      @impl true
-      defdelegate literal_to_ast_node(type, name, value, meta), to: @default_handler
+        @impl true
+        defdelegate expr_to_quoted(type, name, clauses, opts, module, original),
+          to: @default_handler
 
-      @impl true
-      defdelegate expr_to_quoted(type, name, clauses, opts, module, original),
-        to: @default_handler
+        @impl true
+        defdelegate expr_to_value(clauses, opts), to: @default_handler
+        @impl true
+        defdelegate value_to_html(name, value), to: @default_handler
+        @impl true
+        defdelegate value_to_opts(name, value), to: @default_handler
+        @impl true
+        defdelegate update_prop_expr(expr, meta), to: @default_handler
 
-      @impl true
-      defdelegate expr_to_value(clauses, opts), to: @default_handler
-      @impl true
-      defdelegate value_to_html(name, value), to: @default_handler
-      @impl true
-      defdelegate value_to_opts(name, value), to: @default_handler
-      @impl true
-      defdelegate update_prop_expr(expr, meta), to: @default_handler
-
-      defoverridable literal_to_ast_node: 4,
-                     expr_to_quoted: 6,
-                     expr_to_value: 2,
-                     value_to_html: 2,
-                     value_to_opts: 2,
-                     update_prop_expr: 2
+        defoverridable literal_to_ast_node: 4,
+                       expr_to_quoted: 6,
+                       expr_to_value: 2,
+                       value_to_html: 2,
+                       value_to_opts: 2,
+                       update_prop_expr: 2
+      end
     end
   end
 
